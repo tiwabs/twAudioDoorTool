@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dat151>
+  <Version value="9458585" />
+  <Items>
+    </Item>
+      <Item type="DoorAudioSettingsLink" ntOffset="15001">
+        <Name>dasl_0908e857</Name> <!-- dasl_ + jooat of the doorname -->
+        <Door>d_my_door_name</Door> <!--  d_ + doorname -->
+      </Item>
+      <Item type="DoorAudioSettings" ntOffset="15002">
+        <Name>d_my_door_name</Name> <!-- d_ + doorname -->
+        <Sounds>door_swing_glass_and_metal_shop_beep</Sounds> <!-- Settings -->
+        <TuningParams>dtp_default_swing</TuningParams> <!-- Settings -->
+        <MaxOcclusion value="0.7" /> <!-- Settings -->
+      </Item>
+      <Item>
+        <Prop>my_door_name</Prop>  <!-- doorname -->
+        <Door>d_my_door_name</Door> <!--  d_ + doorname -->
+      </Item>
+  </Items>
+</Dat151>
