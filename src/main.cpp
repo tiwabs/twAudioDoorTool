@@ -24,8 +24,7 @@ bool settingsPopup() {
     const float popupHeight = 400.0f;
     Rectangle popupRect = getCenteredPopupRect(popupWidth, popupHeight);
     
-    if (GuiWindowBox(popupRect, "Settings"))
-    {
+    if (GuiWindowBox(popupRect, "Settings")) {
         return true;
     }
 
@@ -60,18 +59,90 @@ bool settingsPopup() {
     return false;
 };
 
+// TODO: Make this popup work with add / edit doors, for now it works with add doors only
 bool doorPopup() {
     GuiUnlock();  // Débloquer pour le popup
+
+    static char doorName[256] = "";
+    static char sounds[256] = "";
+    static char tuningParams[256] = "";
+    static float maxOcclusion = 0.7f;
+    static int selectedPreset = 0;
+    static bool doorNameEditMode = false;
     
     // Calculate center position for the popup
-    const float popupWidth = 300.0f;
+    const float popupWidth = 400.0f;
     const float popupHeight = 200.0f;
     Rectangle popupRect = getCenteredPopupRect(popupWidth, popupHeight);
     
-    if (GuiWindowBox(popupRect, "Door"))
-    {
+    // TODO: change the title of the popup depending on the mode (add or edit)
+    if (GuiWindowBox(popupRect, "Add New Door")) {
         return true;
     }
+
+    // Door properties
+    GuiLabel((Rectangle){ popupRect.x + 20.0f, popupRect.y + 30.0f, 100.0f, 20.0f }, "Door Name:");
+    if (GuiTextBox((Rectangle){ popupRect.x + 20.0f, popupRect.y + 55.0f, 360.0f, 25.0f }, doorName, 256, doorNameEditMode)) {
+        doorNameEditMode = !doorNameEditMode;
+    }
+
+    // Sound preset selection
+    GuiLabel((Rectangle){ popupRect.x + 20.0f, popupRect.y + 90.0f, 100.0f, 20.0f }, "Sound Preset:");
+    
+    // Create dropdown text for sound presets
+    static char presetDropdownText[4096] = "";
+    if (presetDropdownText[0] == '\0') {
+        const auto& presets = SettingsManager::getInstance().getSoundPresets();
+        if (!presets.empty()) {
+            strcpy(presetDropdownText, presets[0].name.c_str());
+            for (size_t i = 1; i < presets.size(); i++) {
+                strcat(presetDropdownText, ";");
+                strcat(presetDropdownText, presets[i].name.c_str());
+            }
+        }
+    }
+    
+    static bool presetDropdownEditMode = false;
+    Rectangle presetDropdownRect = { popupRect.x + 20.0f, popupRect.y + 115.0f, 360.0f, 30.0f };
+    if (GuiDropdownBox(presetDropdownRect, presetDropdownText, &selectedPreset, presetDropdownEditMode)) {
+        presetDropdownEditMode = !presetDropdownEditMode;
+        if (!presetDropdownEditMode) {
+            const auto& presets = SettingsManager::getInstance().getSoundPresets();
+            if (selectedPreset < presets.size()) {
+                const auto& preset = presets[selectedPreset];
+                strcpy(sounds, preset.sounds.c_str());
+                strcpy(tuningParams, preset.tuningParams.c_str());
+                maxOcclusion = preset.maxOcclusion;
+            }
+        }
+    }
+
+    if (GuiButton((Rectangle){ popupRect.x + 20.0f, popupRect.y + 160.0f, 100.0f, 20.0f }, "Cancel")) {
+        doorName[0] = '\0';
+        sounds[0] = '\0';
+        tuningParams[0] = '\0';
+        maxOcclusion = 0.7f;
+        selectedPreset = 0;
+
+        return true;
+    }
+
+    // TODO: change the button depending on the mode (add or edit)
+    // Add button
+    if (GuiButton((Rectangle){ popupRect.x + 280.0f, popupRect.y + 160.0f, 100.0f, 20.0f }, "Add Door")) {
+        // TODO: Add door logic
+
+        // TODO: clean the values
+        return true;
+    }
+
+    // if (GuiButton((Rectangle){ popupRect.x + 280.0f, popupRect.y + 160.0f, 100.0f, 30.0f }, "Edit Door")) {
+    //     // TODO: Edit door logic
+
+    //     // TODO: clean the values
+    //     return true;
+    // }
+
     return false;
 };
 
@@ -87,7 +158,7 @@ int main() {
     std::cout << "Loading initial style: " << Theme::GetThemeName(initialTheme) << std::endl;
     Theme::LoadTheme(initialTheme);
 
-    bool showSettingsPopuop = false;
+    bool showSettingsPopup = false;
     bool showDoorPopup = false;
 
     while (!WindowShouldClose()) {
@@ -98,7 +169,7 @@ int main() {
         ClearBackground(bgColor);
 
         // Lock the interface if a popup is shown
-        if (showSettingsPopuop || showDoorPopup) {
+        if (showSettingsPopup || showDoorPopup) {
             GuiLock();
         }
         
@@ -110,9 +181,9 @@ int main() {
 
         if (GuiButton((Rectangle){ 380.0f, 20.0f, 100.0f, 20.0f }, "Settings")) {
             std::cout << "Settings" << std::endl;
-            if (!showSettingsPopuop && !showDoorPopup)
+            if (!showSettingsPopup && !showDoorPopup)
             {
-                showSettingsPopuop = true;
+                showSettingsPopup = true;
             }
         }
 
@@ -129,7 +200,7 @@ int main() {
 
         if (GuiButton((Rectangle){ 380.0f, 560.0f, 100.0f, 20.0f }, "Add new door")) {
             std::cout << "Add new door" << std::endl;
-            if (!showDoorPopup && !showSettingsPopuop)
+            if (!showDoorPopup && !showSettingsPopup)
             {
                 showDoorPopup = true;
             }
@@ -138,16 +209,17 @@ int main() {
         GuiLabel((Rectangle){ 200.0f, 580.0f, 200.0f, 20.0f }, "made by tiwabs");
 
         // Popups should be drawn last
-        if (showSettingsPopuop || showDoorPopup) {
-            // Draw semi-transparent overlay using the theme's background color
+        if (showSettingsPopup || showDoorPopup) {
+            // Draw semi-transparent overlay using the theme's background color to make it look like disabled
             Color overlayColor = GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR));
-            overlayColor.a = 128; // Set alpha to 128 (semi-transparent)
+            overlayColor.a = 128;
             DrawRectangle(0, 0, screenWidth, screenHeight, overlayColor);
         }
 
-        if (showSettingsPopuop) {
+        // TODO: Move this with the other popup stuff
+        if (showSettingsPopup) {
             if (settingsPopup()) {
-                showSettingsPopuop = false;
+                showSettingsPopup = false;
                 GuiUnlock();
             }
         }

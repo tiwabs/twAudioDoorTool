@@ -2,12 +2,6 @@
   "selectedThemeIndex": 1,
   "availableDoorSound": [
     {
-      "name": "No Sound",
-      "Sounds": "",
-      "TuningParams": "",
-      "MaxOcclusion": 0.0
-    },
-    {
       "name": "24/7 Door",
       "Sounds": "hash_f1e8d9fe",
       "TuningParams": "hash_0246d335",

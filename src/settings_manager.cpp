@@ -11,36 +11,57 @@ bool SettingsManager::loadSettings() {
     try {
         std::ifstream file(settingsPath);
         if (!file.is_open()) {
-            std::cout << "Could not open settings file: " << settingsPath << std::endl;
+            std::cout << "No settings file found, using defaults" << std::endl;
             return false;
         }
 
         nlohmann::json j;
         file >> j;
-        
-        selectedThemeIndex = j["selectedThemeIndex"].get<int>();
+
+        if (j.contains("theme")) {
+            selectedThemeIndex = j["theme"];
+        }
+
+        if (j.contains("soundPresets")) {
+            soundPresets.clear();
+            for (const auto& preset : j["soundPresets"]) {
+                SoundPreset p;
+                p.name = preset["name"];
+                p.sounds = preset["sounds"];
+                p.tuningParams = preset["tuningParams"];
+                p.maxOcclusion = preset["maxOcclusion"];
+                soundPresets.push_back(p);
+            }
+        }
+
         return true;
     } catch (const std::exception& e) {
-        std::cout << "Error loading settings: " << e.what() << std::endl;
+        std::cerr << "Error loading settings: " << e.what() << std::endl;
         return false;
     }
 }
 
 bool SettingsManager::saveSettings() {
     try {
-        std::ofstream file(settingsPath);
-        if (!file.is_open()) {
-            std::cout << "Could not open settings file for writing: " << settingsPath << std::endl;
-            return false;
-        }
-
         nlohmann::json j;
-        j["selectedThemeIndex"] = selectedThemeIndex;
-        
-        file << j.dump(2);
+        j["theme"] = selectedThemeIndex;
+
+        nlohmann::json presetsArray = nlohmann::json::array();
+        for (const auto& preset : soundPresets) {
+            nlohmann::json p;
+            p["name"] = preset.name;
+            p["sounds"] = preset.sounds;
+            p["tuningParams"] = preset.tuningParams;
+            p["maxOcclusion"] = preset.maxOcclusion;
+            presetsArray.push_back(p);
+        }
+        j["soundPresets"] = presetsArray;
+
+        std::ofstream file(settingsPath);
+        file << j.dump(4);
         return true;
     } catch (const std::exception& e) {
-        std::cout << "Error saving settings: " << e.what() << std::endl;
+        std::cerr << "Error saving settings: " << e.what() << std::endl;
         return false;
     }
 }
@@ -48,4 +69,27 @@ bool SettingsManager::saveSettings() {
 void SettingsManager::setSelectedThemeIndex(int index) {
     selectedThemeIndex = index;
     saveSettings();
+}
+
+void SettingsManager::addSoundPreset(const SoundPreset& preset) {
+    // Remove existing preset with same name if it exists
+    auto it = std::find_if(soundPresets.begin(), soundPresets.end(),
+        [&](const SoundPreset& p) { return p.name == preset.name; });
+    
+    if (it != soundPresets.end()) {
+        soundPresets.erase(it);
+    }
+    
+    soundPresets.push_back(preset);
+    saveSettings();
+}
+
+void SettingsManager::removeSoundPreset(const std::string& name) {
+    auto it = std::find_if(soundPresets.begin(), soundPresets.end(),
+        [&](const SoundPreset& p) { return p.name == name; });
+    
+    if (it != soundPresets.end()) {
+        soundPresets.erase(it);
+        saveSettings();
+    }
 } 
