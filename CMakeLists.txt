@@ -43,24 +43,48 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(tinyxml2)
 
+# Fetch nlohmann/json
+FetchContent_Declare(
+    json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.2
+)
+FetchContent_MakeAvailable(json)
+
 # Add source files
 set(SOURCES
     src/main.cpp
     src/themes.cpp
+    src/settings_manager.cpp
 )
 
 # Add header files
 set(HEADERS
     src/themes.h
+    src/settings_manager.h
 )
 
 # Create executable
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
+# Create assets directory in build folder
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+)
+
+# Copy settings.json to build directory
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_SOURCE_DIR}/assets/settings.json
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets/settings.json
+)
+
 # Link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE
     raylib
     tinyxml2
+    nlohmann_json::nlohmann_json
 )
 
 # Configurer les chemins d'inclusion

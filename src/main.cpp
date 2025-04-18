@@ -3,6 +3,7 @@
 #include <string>
 #include <cstring>
 #include "themes.h"
+#include "settings_manager.h"
 #include "raylib.h"
 #include "raygui.h"
 
@@ -32,7 +33,7 @@ bool settingsPopup() {
     GuiLabel((Rectangle){ popupRect.x + 20.0f, popupRect.y + 30.0f, 100.0f, 20.0f }, "Theme:");
     
     // Create a dropdown for theme selection
-    static int dropdownActive = Theme::GetCurrentThemeIndex();
+    static int dropdownActive = SettingsManager::getInstance().getSelectedThemeIndex();
     static bool dropdownEditMode = false;
     Rectangle dropdownRect = { popupRect.x + 20.0f, popupRect.y + 60.0f, 260.0f, 30.0f };
     
@@ -51,7 +52,8 @@ bool settingsPopup() {
     }
     
     // Apply the selected theme if it has changed
-    if (Theme::GetCurrentThemeIndex() != dropdownActive) {
+    if (SettingsManager::getInstance().getSelectedThemeIndex() != dropdownActive) {
+        SettingsManager::getInstance().setSelectedThemeIndex(dropdownActive);
         Theme::LoadTheme(dropdownActive);
     }
 
@@ -79,9 +81,11 @@ int main() {
     InitWindow(screenWidth, screenHeight, "GTA V Audio Door Tool");
     SetTargetFPS(60);
 
-    // Load initial style
-    std::cout << "Loading initial style: " << Theme::GetThemeName(Theme::GetCurrentThemeIndex()) << std::endl;
-    Theme::LoadTheme(Theme::GetCurrentThemeIndex());
+    // Load settings and initial theme
+    SettingsManager::getInstance().loadSettings();
+    int initialTheme = SettingsManager::getInstance().getSelectedThemeIndex();
+    std::cout << "Loading initial style: " << Theme::GetThemeName(initialTheme) << std::endl;
+    Theme::LoadTheme(initialTheme);
 
     bool showSettingsPopuop = false;
     bool showDoorPopup = false;
