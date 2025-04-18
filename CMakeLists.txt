@@ -35,16 +35,41 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(raygui)
 
-# Ajouter les fichiers sources
-add_executable(${PROJECT_NAME} src/main.cpp)
+# Fetch TinyXML2
+FetchContent_Declare(
+    tinyxml2
+    GIT_REPOSITORY https://github.com/leethomason/tinyxml2.git
+    GIT_TAG 9.0.0
+)
+FetchContent_MakeAvailable(tinyxml2)
 
-# Lier les bibliothèques
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+# Add source files
+set(SOURCES
+    src/main.cpp
+    src/themes.cpp
+)
+
+# Add header files
+set(HEADERS
+    src/themes.h
+)
+
+# Create executable
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+
+# Link libraries
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    raylib
+    tinyxml2
+)
 
 # Configurer les chemins d'inclusion
 target_include_directories(${PROJECT_NAME} PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${raylib_SOURCE_DIR}/src
     ${raygui_SOURCE_DIR}/src
+    ${tinyxml2_SOURCE_DIR}
+    ${raylib_BINARY_DIR}
 )
 
 # Configuration spécifique pour macOS

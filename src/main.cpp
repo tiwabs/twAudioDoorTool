@@ -1,81 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cstring>
+#include "themes.h"
 #include "raylib.h"
-#define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
-
-// Include styles from raygui build folder
-#include "../build/_deps/raygui-src/styles/ashes/ashes.h"
-#include "../build/_deps/raygui-src/styles/bluish/bluish.h"
-#include "../build/_deps/raygui-src/styles/candy/candy.h"
-#include "../build/_deps/raygui-src/styles/cherry/cherry.h"
-#include "../build/_deps/raygui-src/styles/cyber/cyber.h"
-#include "../build/_deps/raygui-src/styles/dark/dark.h"
-#include "../build/_deps/raygui-src/styles/enefete/enefete.h"
-#include "../build/_deps/raygui-src/styles/jungle/jungle.h"
-#include "../build/_deps/raygui-src/styles/lavanda/lavanda.h"
-#include "../build/_deps/raygui-src/styles/sunny/sunny.h"
-#include "../build/_deps/raygui-src/styles/terminal/terminal.h"
-
-const char* styles[] = {
-    "default",
-    "dark",
-    "bluish",
-    "candy",
-    "cherry",
-    "cyber",
-    "jungle",
-    "lavanda",
-    "terminal",
-    "sunny",
-    "ashes",
-    "enefete"
-};
-const int stylesCount = sizeof(styles)/sizeof(styles[0]);
-int currentStyle = 1; // dark style by default
-
-// Function to load the style based on the index
-void loadStyle(int styleIndex) {
-    switch(styleIndex) {
-        case 0: // default
-            GuiLoadStyleDefault();
-            break;
-        case 1: // dark
-            GuiLoadStyleDark();
-            break;
-        case 2: // bluish
-            GuiLoadStyleBluish();
-            break;
-        case 3: // candy
-            GuiLoadStyleCandy();
-            break;
-        case 4: // cherry
-            GuiLoadStyleCherry();
-            break;
-        case 5: // cyber
-            GuiLoadStyleCyber();
-            break;
-        case 6: // jungle
-            GuiLoadStyleJungle();
-            break;
-        case 7: // lavanda
-            GuiLoadStyleLavanda();
-            break;
-        case 8: // terminal
-            GuiLoadStyleTerminal();
-            break;
-        case 9: // sunny
-            GuiLoadStyleSunny();
-            break;
-        case 10: // ashes
-            GuiLoadStyleAshes();
-            break;
-        case 11: // enefete
-            GuiLoadStyleEnefete();
-            break;
-    }
-}
 
 // Function to calculate the centered position for a popup
 Rectangle getCenteredPopupRect(float width, float height) {
@@ -103,17 +32,17 @@ bool settingsPopup() {
     GuiLabel((Rectangle){ popupRect.x + 20.0f, popupRect.y + 30.0f, 100.0f, 20.0f }, "Theme:");
     
     // Create a dropdown for theme selection
-    static int dropdownActive = currentStyle;
+    static int dropdownActive = Theme::GetCurrentThemeIndex();
     static bool dropdownEditMode = false;
     Rectangle dropdownRect = { popupRect.x + 20.0f, popupRect.y + 60.0f, 260.0f, 30.0f };
     
     // Convert styles array to a single string with items separated by semicolons
     static char dropdownText[1024] = "";
     if (dropdownText[0] == '\0') {
-        strcpy(dropdownText, styles[0]);
-        for (int i = 1; i < stylesCount; i++) {
+        strcpy(dropdownText, Theme::GetThemeName(0));
+        for (int i = 1; i < 12; i++) {
             strcat(dropdownText, ";");
-            strcat(dropdownText, styles[i]);
+            strcat(dropdownText, Theme::GetThemeName(i));
         }
     }
     
@@ -122,10 +51,8 @@ bool settingsPopup() {
     }
     
     // Apply the selected theme if it has changed
-    if (currentStyle != dropdownActive) {
-        currentStyle = dropdownActive;
-        std::cout << "Loading style: " << styles[currentStyle] << std::endl;
-        loadStyle(currentStyle);
+    if (Theme::GetCurrentThemeIndex() != dropdownActive) {
+        Theme::LoadTheme(dropdownActive);
     }
 
     return false;
@@ -153,8 +80,8 @@ int main() {
     SetTargetFPS(60);
 
     // Load initial style
-    std::cout << "Loading initial style: " << styles[currentStyle] << std::endl;
-    loadStyle(currentStyle);
+    std::cout << "Loading initial style: " << Theme::GetThemeName(Theme::GetCurrentThemeIndex()) << std::endl;
+    Theme::LoadTheme(Theme::GetCurrentThemeIndex());
 
     bool showSettingsPopuop = false;
     bool showDoorPopup = false;
