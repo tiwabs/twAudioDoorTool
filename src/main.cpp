@@ -86,36 +86,6 @@ bool doorPopup() {
         doorNameEditMode = !doorNameEditMode;
     }
 
-    // Sound preset selection
-    GuiLabel(Rectangle{ popupRect.x + 20.0f, popupRect.y + 90.0f, 100.0f, 20.0f }, "Sound Preset:");
-    
-    // Create dropdown text for sound presets
-    static char presetDropdownText[4096] = "";
-    if (presetDropdownText[0] == '\0') {
-        const auto& presets = SettingsManager::getInstance().getSoundPresets();
-        if (!presets.empty()) {
-            strcpy(presetDropdownText, presets[0].name.c_str());
-            for (size_t i = 1; i < presets.size(); i++) {
-                strcat(presetDropdownText, ";");
-                strcat(presetDropdownText, presets[i].name.c_str());
-            }
-        }
-    }
-    
-    static bool presetDropdownEditMode = false;
-    Rectangle presetDropdownRect = { popupRect.x + 20.0f, popupRect.y + 115.0f, 360.0f, 30.0f };
-    if (GuiDropdownBox(presetDropdownRect, presetDropdownText, &selectedPreset, presetDropdownEditMode)) {
-        presetDropdownEditMode = !presetDropdownEditMode;
-        if (!presetDropdownEditMode) {
-            const auto& presets = SettingsManager::getInstance().getSoundPresets();
-            if (selectedPreset < presets.size()) {
-                const auto& preset = presets[selectedPreset];
-                strcpy(sounds, preset.sounds.c_str());
-                strcpy(tuningParams, preset.tuningParams.c_str());
-                maxOcclusion = preset.maxOcclusion;
-            }
-        }
-    }
 
     if (GuiButton(Rectangle{ popupRect.x + 20.0f, popupRect.y + 160.0f, 100.0f, 20.0f }, "Cancel")) {
         doorName[0] = '\0';
@@ -142,6 +112,36 @@ bool doorPopup() {
     //     // TODO: clean the values
     //     return true;
     // }
+
+    // Sound preset selection
+    GuiLabel(Rectangle{ popupRect.x + 20.0f, popupRect.y + 90.0f, 100.0f, 20.0f }, "Sound Preset:");
+    
+    // Create dropdown text for sound presets
+    static char presetDropdownText[4096] = "";
+    if (presetDropdownText[0] == '\0') {
+        const auto& presets = SettingsManager::getInstance().getSoundPresets();
+        if (!presets.empty()) {
+            strcpy(presetDropdownText, presets[0].name.c_str());
+            for (size_t i = 1; i < presets.size(); i++) {
+                strcat(presetDropdownText, ";");
+                strcat(presetDropdownText, presets[i].name.c_str());
+            }
+        }
+    }
+    
+    Rectangle presetDropdownRect = { popupRect.x + 20.0f, popupRect.y + 115.0f, 360.0f, 30.0f };
+    
+    int newSelectedPreset = GuiComboBox(presetDropdownRect, presetDropdownText, selectedPreset);
+    if (newSelectedPreset != selectedPreset) {
+        selectedPreset = newSelectedPreset;
+        const auto& presets = SettingsManager::getInstance().getSoundPresets();
+        if (selectedPreset < presets.size()) {
+            const auto& preset = presets[selectedPreset];
+            strcpy(sounds, preset.sounds.c_str());
+            strcpy(tuningParams, preset.tuningParams.c_str());
+            maxOcclusion = preset.maxOcclusion;
+        }
+    }
 
     return false;
 };

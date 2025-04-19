@@ -22,14 +22,14 @@ bool SettingsManager::loadSettings() {
             selectedThemeIndex = j["theme"];
         }
 
-        if (j.contains("soundPresets")) {
+        if (j.contains("availableDoorSound")) {
             soundPresets.clear();
-            for (const auto& preset : j["soundPresets"]) {
+            for (const auto& preset : j["availableDoorSound"]) {
                 SoundPreset p;
                 p.name = preset["name"];
-                p.sounds = preset["sounds"];
-                p.tuningParams = preset["tuningParams"];
-                p.maxOcclusion = preset["maxOcclusion"];
+                p.sounds = preset["Sounds"];
+                p.tuningParams = preset["TuningParams"];
+                p.maxOcclusion = preset["MaxOcclusion"];
                 soundPresets.push_back(p);
             }
         }
