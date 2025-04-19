@@ -151,6 +151,7 @@ int main() {
     const int screenHeight = 600;
     InitWindow(screenWidth, screenHeight, "GTA V Audio Door Tool");
     SetTargetFPS(60);
+    SetExitKey(0);
 
     // Load settings and initial theme
     SettingsManager::getInstance().loadSettings();
