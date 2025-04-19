@@ -13,7 +13,7 @@ Rectangle getCenteredPopupRect(float width, float height) {
     const float screenHeight = static_cast<float>(GetScreenHeight());
     const float x = (screenWidth - width) / 2.0f;
     const float y = (screenHeight - height) / 2.0f;
-    return (Rectangle){ x, y, width, height };
+    return Rectangle{ x, y, width, height };
 }
 
 bool settingsPopup() {
@@ -29,7 +29,7 @@ bool settingsPopup() {
     }
 
     // Style selector with dropdown
-    GuiLabel((Rectangle){ popupRect.x + 20.0f, popupRect.y + 30.0f, 100.0f, 20.0f }, "Theme:");
+    GuiLabel(Rectangle{ popupRect.x + 20.0f, popupRect.y + 30.0f, 100.0f, 20.0f }, "Theme:");
     
     // Create a dropdown for theme selection
     static int dropdownActive = SettingsManager::getInstance().getSelectedThemeIndex();
@@ -81,13 +81,13 @@ bool doorPopup() {
     }
 
     // Door properties
-    GuiLabel((Rectangle){ popupRect.x + 20.0f, popupRect.y + 30.0f, 100.0f, 20.0f }, "Door Name:");
-    if (GuiTextBox((Rectangle){ popupRect.x + 20.0f, popupRect.y + 55.0f, 360.0f, 25.0f }, doorName, 256, doorNameEditMode)) {
+    GuiLabel(Rectangle{ popupRect.x + 20.0f, popupRect.y + 30.0f, 100.0f, 20.0f }, "Door Name:");
+    if (GuiTextBox(Rectangle{ popupRect.x + 20.0f, popupRect.y + 55.0f, 360.0f, 25.0f }, doorName, 256, doorNameEditMode)) {
         doorNameEditMode = !doorNameEditMode;
     }
 
     // Sound preset selection
-    GuiLabel((Rectangle){ popupRect.x + 20.0f, popupRect.y + 90.0f, 100.0f, 20.0f }, "Sound Preset:");
+    GuiLabel(Rectangle{ popupRect.x + 20.0f, popupRect.y + 90.0f, 100.0f, 20.0f }, "Sound Preset:");
     
     // Create dropdown text for sound presets
     static char presetDropdownText[4096] = "";
@@ -117,7 +117,7 @@ bool doorPopup() {
         }
     }
 
-    if (GuiButton((Rectangle){ popupRect.x + 20.0f, popupRect.y + 160.0f, 100.0f, 20.0f }, "Cancel")) {
+    if (GuiButton(Rectangle{ popupRect.x + 20.0f, popupRect.y + 160.0f, 100.0f, 20.0f }, "Cancel")) {
         doorName[0] = '\0';
         sounds[0] = '\0';
         tuningParams[0] = '\0';
@@ -129,14 +129,14 @@ bool doorPopup() {
 
     // TODO: change the button depending on the mode (add or edit)
     // Add button
-    if (GuiButton((Rectangle){ popupRect.x + 280.0f, popupRect.y + 160.0f, 100.0f, 20.0f }, "Add Door")) {
+    if (GuiButton(Rectangle{ popupRect.x + 280.0f, popupRect.y + 160.0f, 100.0f, 20.0f }, "Add Door")) {
         // TODO: Add door logic
 
         // TODO: clean the values
         return true;
     }
 
-    // if (GuiButton((Rectangle){ popupRect.x + 280.0f, popupRect.y + 160.0f, 100.0f, 30.0f }, "Edit Door")) {
+    // if (GuiButton(Rectangle{ popupRect.x + 280.0f, popupRect.y + 160.0f, 100.0f, 30.0f }, "Edit Door")) {
     //     // TODO: Edit door logic
 
     //     // TODO: clean the values
@@ -174,12 +174,12 @@ int main() {
         }
         
         // Top buttons
-        if (GuiButton((Rectangle){ 20.0f, 20.0f, 100.0f, 20.0f }, "Import file")) {
+        if (GuiButton(Rectangle{ 20.0f, 20.0f, 100.0f, 20.0f }, "Import file")) {
             std::cout << "Import file" << std::endl;
             //TODO: Make a file browser to select the input file
         }
 
-        if (GuiButton((Rectangle){ 380.0f, 20.0f, 100.0f, 20.0f }, "Settings")) {
+        if (GuiButton(Rectangle{ 380.0f, 20.0f, 100.0f, 20.0f }, "Settings")) {
             std::cout << "Settings" << std::endl;
             if (!showSettingsPopup && !showDoorPopup)
             {
@@ -188,17 +188,17 @@ int main() {
         }
 
         // Middle
-        GuiGroupBox((Rectangle){ 20.0f, 60.0f, 460.0f, 480.0f }, "Doors");
+        GuiGroupBox(Rectangle{ 20.0f, 60.0f, 460.0f, 480.0f }, "Doors");
         
         //TODO: Make a scroll area for the doors
 
         // Bottom buttons
-        if (GuiButton((Rectangle){ 20.0f, 560.0f, 100.0f, 20.0f }, "Generate file")) {
+        if (GuiButton(Rectangle{ 20.0f, 560.0f, 100.0f, 20.0f }, "Generate file")) {
             std::cout << "Generate file" << std::endl;
             //TODO: Make a file browser to select the output location and file name
         }
 
-        if (GuiButton((Rectangle){ 380.0f, 560.0f, 100.0f, 20.0f }, "Add new door")) {
+        if (GuiButton(Rectangle{ 380.0f, 560.0f, 100.0f, 20.0f }, "Add new door")) {
             std::cout << "Add new door" << std::endl;
             if (!showDoorPopup && !showSettingsPopup)
             {
@@ -206,7 +206,7 @@ int main() {
             }
         }
         
-        GuiLabel((Rectangle){ 200.0f, 580.0f, 200.0f, 20.0f }, "made by tiwabs");
+        GuiLabel(Rectangle{ 200.0f, 580.0f, 200.0f, 20.0f }, "made by tiwabs");
 
         // Popups should be drawn last
         if (showSettingsPopup || showDoorPopup) {

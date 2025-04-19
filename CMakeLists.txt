@@ -105,3 +105,13 @@ if(APPLE)
         "-framework CoreVideo"
     )
 endif()
+
+# Configuration spécifique pour Windows
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE 
+        winmm
+        gdi32
+        opengl32
+    )
+    set(CMAKE_EXE_LINKER_FLAGS "-static")
+endif()
