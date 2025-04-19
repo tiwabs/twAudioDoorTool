@@ -4,7 +4,7 @@
 #include "raygui.h"
 #include <iostream>
 
-// Include styles from raygui build folder
+// Include all theme style definitions from raygui
 #include "../build/_deps/raygui-src/styles/ashes/ashes.h"
 #include "../build/_deps/raygui-src/styles/bluish/bluish.h"
 #include "../build/_deps/raygui-src/styles/candy/candy.h"
@@ -17,11 +17,17 @@
 #include "../build/_deps/raygui-src/styles/sunny/sunny.h"
 #include "../build/_deps/raygui-src/styles/terminal/terminal.h"
 
+// Initialize the current theme to dark theme by default
 int Theme::currentThemeIndex = Theme::THEME_DARK;
 
+/**
+ * Load and apply a theme by its index
+ * @param themeIndex Index of the theme to load
+ */
 void Theme::LoadTheme(int themeIndex) {
     currentThemeIndex = themeIndex;
 
+    // Apply the selected theme using raygui's theme loading functions
     switch (themeIndex) {
         case THEME_DEFAULT:
             GuiLoadStyleDefault();
@@ -66,6 +72,11 @@ void Theme::LoadTheme(int themeIndex) {
     }
 }
 
+/**
+ * Get the name of a theme by its index
+ * @param themeIndex Index of the theme
+ * @return Name of the theme as a string, or "Unknown" if index is invalid
+ */
 const char* Theme::GetThemeName(int themeIndex) {
     switch (themeIndex) {
         case THEME_DEFAULT: return "Default";

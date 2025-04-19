@@ -2,26 +2,38 @@
 #include <fstream>
 #include <iostream>
 
+/**
+ * Get the singleton instance of SettingsManager
+ * Creates the instance if it doesn't exist
+ */
 SettingsManager& SettingsManager::getInstance() {
     static SettingsManager instance;
     return instance;
 }
 
+/**
+ * Load settings from the JSON file
+ * If the file doesn't exist or there's an error, use default settings
+ */
 bool SettingsManager::loadSettings() {
     try {
+        // Open settings file
         std::ifstream file(settingsPath);
         if (!file.is_open()) {
             std::cout << "No settings file found, using defaults" << std::endl;
             return false;
         }
 
+        // Parse JSON data
         nlohmann::json j;
         file >> j;
 
+        // Load theme setting if present
         if (j.contains("theme")) {
             selectedThemeIndex = j["theme"];
         }
 
+        // Load sound presets if present
         if (j.contains("availableDoorSound")) {
             soundPresets.clear();
             for (const auto& preset : j["availableDoorSound"]) {
@@ -41,11 +53,16 @@ bool SettingsManager::loadSettings() {
     }
 }
 
+/**
+ * Save current settings to JSON file
+ * Includes theme and all sound presets
+ */
 bool SettingsManager::saveSettings() {
     try {
         nlohmann::json j;
         j["theme"] = selectedThemeIndex;
 
+        // Convert sound presets to JSON array
         nlohmann::json presetsArray = nlohmann::json::array();
         for (const auto& preset : soundPresets) {
             nlohmann::json p;
@@ -57,6 +74,7 @@ bool SettingsManager::saveSettings() {
         }
         j["soundPresets"] = presetsArray;
 
+        // Write to file with pretty formatting
         std::ofstream file(settingsPath);
         file << j.dump(4);
         return true;
@@ -66,11 +84,18 @@ bool SettingsManager::saveSettings() {
     }
 }
 
+/**
+ * Update the selected theme and save the change
+ */
 void SettingsManager::setSelectedThemeIndex(int index) {
     selectedThemeIndex = index;
     saveSettings();
 }
 
+/**
+ * Add or update a sound preset
+ * If a preset with the same name exists, it will be replaced
+ */
 void SettingsManager::addSoundPreset(const SoundPreset& preset) {
     // Remove existing preset with same name if it exists
     auto it = std::find_if(soundPresets.begin(), soundPresets.end(),
@@ -84,6 +109,10 @@ void SettingsManager::addSoundPreset(const SoundPreset& preset) {
     saveSettings();
 }
 
+/**
+ * Remove a sound preset by name
+ * If the preset doesn't exist, no action is taken
+ */
 void SettingsManager::removeSoundPreset(const std::string& name) {
     auto it = std::find_if(soundPresets.begin(), soundPresets.end(),
         [&](const SoundPreset& p) { return p.name == name; });

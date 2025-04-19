@@ -7,7 +7,12 @@
 #include "raylib.h"
 #include "raygui.h"
 
-// Function to calculate the centered position for a popup
+/**
+ * Calculates the centered position for a popup window
+ * @param width - Width of the popup
+ * @param height - Height of the popup
+ * @return Rectangle with centered coordinates
+ */
 Rectangle getCenteredPopupRect(float width, float height) {
     const float screenWidth = static_cast<float>(GetScreenWidth());
     const float screenHeight = static_cast<float>(GetScreenHeight());
@@ -16,14 +21,20 @@ Rectangle getCenteredPopupRect(float width, float height) {
     return Rectangle{ x, y, width, height };
 }
 
+/**
+ * Handles the settings popup window functionality
+ * Allows users to change application theme
+ * @return true if popup should close, false otherwise
+ */
 bool settingsPopup() {
-    GuiUnlock();  // Débloquer pour le popup
+    GuiUnlock();  // Unlock GUI for popup interaction
     
     // Calculate center position for the popup
     const float popupWidth = 300.0f;
     const float popupHeight = 400.0f;
     Rectangle popupRect = getCenteredPopupRect(popupWidth, popupHeight);
     
+    // Create window box with close button
     if (GuiWindowBox(popupRect, "Settings")) {
         return true;
     }
@@ -46,6 +57,7 @@ bool settingsPopup() {
         }
     }
     
+    // Handle dropdown interaction
     if (GuiDropdownBox(dropdownRect, dropdownText, &dropdownActive, dropdownEditMode)) {
         dropdownEditMode = !dropdownEditMode;
     }
@@ -59,10 +71,15 @@ bool settingsPopup() {
     return false;
 };
 
-// TODO: Make this popup work with add / edit doors, for now it works with add doors only
+/**
+ * Handles the door popup window functionality
+ * Currently only supports adding new doors (TODO: implement edit functionality)
+ * @return true if popup should close, false otherwise
+ */
 bool doorPopup() {
-    GuiUnlock();  // Débloquer pour le popup
+    GuiUnlock();  // Unlock GUI for popup interaction
 
+    // Static variables to store door properties
     static char doorName[256] = "";
     static char sounds[256] = "";
     static char tuningParams[256] = "";
@@ -75,43 +92,33 @@ bool doorPopup() {
     const float popupHeight = 200.0f;
     Rectangle popupRect = getCenteredPopupRect(popupWidth, popupHeight);
     
-    // TODO: change the title of the popup depending on the mode (add or edit)
+    // Create window box with close button
     if (GuiWindowBox(popupRect, "Add New Door")) {
         return true;
     }
 
-    // Door properties
+    // Door name input field
     GuiLabel(Rectangle{ popupRect.x + 20.0f, popupRect.y + 30.0f, 100.0f, 20.0f }, "Door Name:");
     if (GuiTextBox(Rectangle{ popupRect.x + 20.0f, popupRect.y + 55.0f, 360.0f, 25.0f }, doorName, 256, doorNameEditMode)) {
         doorNameEditMode = !doorNameEditMode;
     }
 
-
+    // Cancel button - resets all fields
     if (GuiButton(Rectangle{ popupRect.x + 20.0f, popupRect.y + 160.0f, 100.0f, 20.0f }, "Cancel")) {
         doorName[0] = '\0';
         sounds[0] = '\0';
         tuningParams[0] = '\0';
         maxOcclusion = 0.7f;
         selectedPreset = 0;
-
         return true;
     }
 
-    // TODO: change the button depending on the mode (add or edit)
-    // Add button
+    // Add door button
     if (GuiButton(Rectangle{ popupRect.x + 280.0f, popupRect.y + 160.0f, 100.0f, 20.0f }, "Add Door")) {
         // TODO: Add door logic
-
         // TODO: clean the values
         return true;
     }
-
-    // if (GuiButton(Rectangle{ popupRect.x + 280.0f, popupRect.y + 160.0f, 100.0f, 30.0f }, "Edit Door")) {
-    //     // TODO: Edit door logic
-
-    //     // TODO: clean the values
-    //     return true;
-    // }
 
     // Sound preset selection
     GuiLabel(Rectangle{ popupRect.x + 20.0f, popupRect.y + 90.0f, 100.0f, 20.0f }, "Sound Preset:");
@@ -129,9 +136,11 @@ bool doorPopup() {
         }
     }
     
+    // Handle preset selection
     Rectangle presetDropdownRect = { popupRect.x + 20.0f, popupRect.y + 115.0f, 360.0f, 30.0f };
-    
     int newSelectedPreset = GuiComboBox(presetDropdownRect, presetDropdownText, selectedPreset);
+    
+    // Update fields when a new preset is selected
     if (newSelectedPreset != selectedPreset) {
         selectedPreset = newSelectedPreset;
         const auto& presets = SettingsManager::getInstance().getSoundPresets();
@@ -146,35 +155,42 @@ bool doorPopup() {
     return false;
 };
 
+/**
+ * Main application entry point
+ * Initializes the window and runs the main application loop
+ */
 int main() {
+    // Initialize window with fixed dimensions
     const int screenWidth = 500;
     const int screenHeight = 600;
     InitWindow(screenWidth, screenHeight, "GTA V Audio Door Tool");
     SetTargetFPS(60);
     SetExitKey(0);
 
-    // Load settings and initial theme
+    // Load application settings and initial theme
     SettingsManager::getInstance().loadSettings();
     int initialTheme = SettingsManager::getInstance().getSelectedThemeIndex();
     std::cout << "Loading initial style: " << Theme::GetThemeName(initialTheme) << std::endl;
     Theme::LoadTheme(initialTheme);
 
+    // Popup state flags
     bool showSettingsPopup = false;
     bool showDoorPopup = false;
 
+    // Main application loop
     while (!WindowShouldClose()) {
         BeginDrawing();
         
-        // Use the theme's background color instead of a fixed gray color
+        // Set background color based on current theme
         Color bgColor = GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR));
         ClearBackground(bgColor);
 
-        // Lock the interface if a popup is shown
+        // Lock GUI when popups are shown
         if (showSettingsPopup || showDoorPopup) {
             GuiLock();
         }
         
-        // Top buttons
+        // Top navigation buttons
         if (GuiButton(Rectangle{ 20.0f, 20.0f, 100.0f, 20.0f }, "Import file")) {
             std::cout << "Import file" << std::endl;
             //TODO: Make a file browser to select the input file
@@ -188,12 +204,12 @@ int main() {
             }
         }
 
-        // Middle
+        // Main content area
         GuiGroupBox(Rectangle{ 20.0f, 60.0f, 460.0f, 480.0f }, "Doors");
         
         //TODO: Make a scroll area for the doors
 
-        // Bottom buttons
+        // Bottom action buttons
         if (GuiButton(Rectangle{ 20.0f, 560.0f, 100.0f, 20.0f }, "Generate file")) {
             std::cout << "Generate file" << std::endl;
             //TODO: Make a file browser to select the output location and file name
@@ -207,17 +223,18 @@ int main() {
             }
         }
         
+        // Credits
         GuiLabel(Rectangle{ 200.0f, 580.0f, 200.0f, 20.0f }, "made by tiwabs");
 
-        // Popups should be drawn last
+        // Draw popup overlays
         if (showSettingsPopup || showDoorPopup) {
-            // Draw semi-transparent overlay using the theme's background color to make it look like disabled
+            // Create semi-transparent overlay
             Color overlayColor = GetColor(GuiGetStyle(DEFAULT, BACKGROUND_COLOR));
             overlayColor.a = 128;
             DrawRectangle(0, 0, screenWidth, screenHeight, overlayColor);
         }
 
-        // TODO: Move this with the other popup stuff
+        // Handle popup windows
         if (showSettingsPopup) {
             if (settingsPopup()) {
                 showSettingsPopup = false;
@@ -235,6 +252,7 @@ int main() {
         EndDrawing();
     }
 
+    // Cleanup
     CloseWindow();
     return 0;
 }
