@@ -3,6 +3,41 @@
 #include <iostream>
 #include <filesystem>
 
+#ifdef __APPLE__
+#include <mach-o/dyld.h> // For _NSGetExecutablePath on macOS
+#elif defined(_WIN32)
+#include <windows.h>
+#endif
+
+/**
+ * Get the absolute path to the executable
+ * @return Path to the executable
+ */
+std::string getExecutablePath() {
+#ifdef __APPLE__
+    char path[1024];
+    uint32_t size = sizeof(path);
+    if (_NSGetExecutablePath(path, &size) == 0) {
+        return std::string(path);
+    }
+#elif defined(_WIN32)
+    char path[MAX_PATH];
+    if (GetModuleFileNameA(NULL, path, MAX_PATH) != 0) {
+        return std::string(path);
+    }
+#endif
+    return "";
+}
+
+/**
+ * Get the directory containing the executable
+ * @return Path to the directory containing the executable
+ */
+std::string getExecutableDirectory() {
+    std::string exePath = getExecutablePath();
+    return std::filesystem::path(exePath).parent_path().string();
+}
+
 /**
  * Get the singleton instance of SettingsManager
  * Creates the instance if it doesn't exist
@@ -38,29 +73,15 @@ bool tryOpenSettingsFile(const std::string& path, std::ifstream& file) {
 bool SettingsManager::loadSettings() {
     try {
         std::ifstream file;
-        std::vector<std::string> possiblePaths = {
-            settingsPath,                                    // assets/settings.json
-            "assets/settings.json",                          // assets/settings.json (explicit)
-            "../assets/settings.json",                       // ../assets/settings.json
-            std::string("../../") + settingsPath,           // ../../assets/settings.json
-            std::string("../../../") + settingsPath         // ../../../assets/settings.json
-        };
-
-        bool fileOpened = false;
-        for (const auto& path : possiblePaths) {
-            if (tryOpenSettingsFile(path, file)) {
-                fileOpened = true;
-                settingsPath = path;  // Update the path to the working one
-                break;
-            }
-        }
-
-        if (!fileOpened) {
-            std::cerr << "Error: Could not open settings file. Tried the following paths:" << std::endl;
-            for (const auto& path : possiblePaths) {
-                std::cerr << "  - " << path << std::endl;
-            }
+        // Obtient le répertoire de l'exécutable
+        std::string exeDir = getExecutableDirectory();
+        std::string settingsFilePath = exeDir + "/assets/settings.json";
+        
+        file.open(settingsFilePath);
+        if (!file.is_open()) {
+            std::cerr << "Error: Could not open settings file at: " << settingsFilePath << std::endl;
             std::cerr << "Current working directory: " << std::filesystem::current_path().string() << std::endl;
+            std::cerr << "Executable directory: " << exeDir << std::endl;
             return false;
         }
 
@@ -114,12 +135,12 @@ bool SettingsManager::saveSettings() {
         for (const auto& preset : soundPresets) {
             nlohmann::json p;
             p["name"] = preset.name;
-            p["sounds"] = preset.sounds;
-            p["tuningParams"] = preset.tuningParams;
-            p["maxOcclusion"] = preset.maxOcclusion;
+            p["Sounds"] = preset.sounds;
+            p["TuningParams"] = preset.tuningParams;
+            p["MaxOcclusion"] = preset.maxOcclusion;
             presetsArray.push_back(p);
         }
-        j["soundPresets"] = presetsArray;
+        j["availableDoorSound"] = presetsArray;
 
         // Write to file with pretty formatting
         std::ofstream file(settingsPath);
@@ -179,4 +200,4 @@ void SettingsManager::updateSoundPreset(size_t index, const SoundPreset& preset)
 bool SettingsManager::hasSoundPreset(const std::string& name) const {
     return std::find_if(soundPresets.begin(), soundPresets.end(),
         [&](const SoundPreset& p) { return p.name == name; }) != soundPresets.end();
-} 
+}
