@@ -40,18 +40,6 @@ public:
     bool saveSettings();
     
     /**
-     * Get the currently selected theme index
-     * @return Index of the selected theme
-     */
-    int getSelectedThemeIndex() const { return selectedThemeIndex; }
-    
-    /**
-     * Set the theme index and save the change
-     * @param index New theme index to set
-     */
-    void setSelectedThemeIndex(int index);
-    
-    /**
      * Get all available sound presets
      * @return Vector of all sound presets
      */
@@ -72,6 +60,5 @@ public:
 private:
     SettingsManager() = default;  // Private constructor for singleton
     std::string settingsPath = "assets/settings.json";  // Path to settings file
-    int selectedThemeIndex = 1;   // Default to dark theme
     std::vector<SoundPreset> soundPresets;  // Collection of available sound presets
 }; 

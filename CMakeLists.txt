@@ -14,34 +14,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Définir les options de build
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
+# Find required packages
+find_package(OpenGL REQUIRED)
+find_package(glfw3 REQUIRED)
+
 # Inclure FetchContent pour télécharger les dépendances
 include(FetchContent)
 
-# Télécharger et configurer Raylib
+# Télécharger et configurer Dear ImGui
 FetchContent_Declare(
-    raylib
-    GIT_REPOSITORY https://github.com/raysan5/raylib.git
-    GIT_TAG 4.5.0
+    imgui
+    GIT_REPOSITORY https://github.com/ocornut/imgui.git
+    GIT_TAG v1.91.9
 )
-set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(BUILD_GAMES    OFF CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(raylib)
-
-# Télécharger RayGui (header-only)
-FetchContent_Declare(
-    raygui
-    GIT_REPOSITORY https://github.com/raysan5/raygui.git
-    GIT_TAG 3.5
-)
-FetchContent_MakeAvailable(raygui)
-
-# Fetch TinyXML2
-FetchContent_Declare(
-    tinyxml2
-    GIT_REPOSITORY https://github.com/leethomason/tinyxml2.git
-    GIT_TAG 9.0.0
-)
-FetchContent_MakeAvailable(tinyxml2)
+FetchContent_MakeAvailable(imgui)
 
 # Fetch nlohmann/json
 FetchContent_Declare(
@@ -51,17 +37,36 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(json)
 
+# Fetch pugixml
+FetchContent_Declare(
+    pugixml
+    GIT_REPOSITORY https://github.com/zeux/pugixml.git
+    GIT_TAG v1.13
+)
+FetchContent_MakeAvailable(pugixml)
+
 # Add source files
-set(SOURCES
-    src/main.cpp
-    src/themes.cpp
-    src/settings_manager.cpp
+file(GLOB SOURCES
+    "src/*.cpp"
+    "src/components/*.cpp"
+    "${imgui_SOURCE_DIR}/imgui.cpp"
+    "${imgui_SOURCE_DIR}/imgui_draw.cpp"
+    "${imgui_SOURCE_DIR}/imgui_tables.cpp"
+    "${imgui_SOURCE_DIR}/imgui_widgets.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp"
+    "libs/ImGuiFileDialog/ImGuiFileDialog.cpp"
 )
 
 # Add header files
-set(HEADERS
-    src/themes.h
-    src/settings_manager.h
+file(GLOB HEADERS
+    "src/*.h"
+    "src/components/*.h"
+    "${imgui_SOURCE_DIR}/imgui.h"
+    "${imgui_SOURCE_DIR}/imgui_internal.h"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.h"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.h"
+    "libs/ImGuiFileDialog/ImGuiFileDialog.h"
 )
 
 # Create executable
@@ -82,22 +87,25 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    raylib
-    tinyxml2
     nlohmann_json::nlohmann_json
+    pugixml
+    glfw
+    ${OPENGL_LIBRARIES}
 )
 
 # Configurer les chemins d'inclusion
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${raylib_SOURCE_DIR}/src
-    ${raygui_SOURCE_DIR}/src
-    ${tinyxml2_SOURCE_DIR}
-    ${raylib_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs
+    ${imgui_SOURCE_DIR}
+    ${imgui_SOURCE_DIR}/backends
+    ${pugixml_SOURCE_DIR}/src
+    ${OPENGL_INCLUDE_DIR}
 )
 
 # Configuration spécifique pour macOS
 if(APPLE)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE GL_SILENCE_DEPRECATION)
     target_link_libraries(${PROJECT_NAME} PRIVATE 
         "-framework Cocoa" 
         "-framework IOKit" 

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dat151>
+	<Version value="9458585" />
+	<Items>
+		<Item type="DoorAudioSettingsLink" ntOffset="15001">
+			<Name>dasl_1637306632</Name>
+			<Door>d_door_name_01</Door>
+		</Item>
+		<Item type="DoorAudioSettings" ntOffset="15002">
+			<Name>d_door_name_01</Name>
+			<Sounds>hash_f1e8d9fe</Sounds>
+			<TuningParams>hash_0246d335</TuningParams>
+			<MaxOcclusion value="0.699999988" />
+		</Item>
+		<Item>
+			<Prop>door_name_01</Prop>
+			<Door>d_door_name_01</Door>
+		</Item>
+		<Item type="DoorAudioSettingsLink" ntOffset="15001">
+			<Name>dasl_2471703679</Name>
+			<Door>d_door_name_02</Door>
+		</Item>
+		<Item type="DoorAudioSettings" ntOffset="15002">
+			<Name>d_door_name_02</Name>
+			<Sounds>hash_f1e8d9fe</Sounds>
+			<TuningParams>hash_0246d335</TuningParams>
+			<MaxOcclusion value="0.699999988" />
+		</Item>
+		<Item>
+			<Prop>door_name_02</Prop>
+			<Door>d_door_name_02</Door>
+		</Item>
+		<Item type="DoorAudioSettingsLink" ntOffset="15001">
+			<Name>dasl_1041992209</Name>
+			<Door>d_door_name_03</Door>
+		</Item>
+		<Item type="DoorAudioSettings" ntOffset="15002">
+			<Name>d_door_name_03</Name>
+			<Sounds>hash_f1e8d9fe</Sounds>
+			<TuningParams>hash_0246d335</TuningParams>
+			<MaxOcclusion value="0.699999988" />
+		</Item>
+		<Item>
+			<Prop>door_name_03</Prop>
+			<Door>d_door_name_03</Door>
+		</Item>
+		<Item type="DoorAudioSettingsLink" ntOffset="15001">
+			<Name>dasl_1886940874</Name>
+			<Door>d_door_name_04</Door>
+		</Item>
+		<Item type="DoorAudioSettings" ntOffset="15002">
+			<Name>d_door_name_04</Name>
+			<Sounds>hash_f1e8d9fe</Sounds>
+			<TuningParams>hash_0246d335</TuningParams>
+			<MaxOcclusion value="0.699999988" />
+		</Item>
+		<Item>
+			<Prop>door_name_04</Prop>
+			<Door>d_door_name_04</Door>
+		</Item>
+		<Item type="DoorAudioSettingsLink" ntOffset="15001">
+			<Name>dasl_949845777</Name>
+			<Door>d_door_name_05</Door>
+		</Item>
+		<Item type="DoorAudioSettings" ntOffset="15002">
+			<Name>d_door_name_05</Name>
+			<Sounds>hash_f1e8d9fe</Sounds>
+			<TuningParams>hash_0246d335</TuningParams>
+			<MaxOcclusion value="0.699999988" />
+		</Item>
+		<Item>
+			<Prop>door_name_05</Prop>
+			<Door>d_door_name_05</Door>
+		</Item>
+		<Item type="DoorAudioSettingsLink" ntOffset="15001">
+			<Name>dasl_1245422161</Name>
+			<Door>d_door_name_06</Door>
+		</Item>
+		<Item type="DoorAudioSettings" ntOffset="15002">
+			<Name>d_door_name_06</Name>
+			<Sounds>hash_f1e8d9fe</Sounds>
+			<TuningParams>hash_0246d335</TuningParams>
+			<MaxOcclusion value="0.699999988" />
+		</Item>
+		<Item>
+			<Prop>door_name_06</Prop>
+			<Door>d_door_name_06</Door>
+		</Item>
+		<Item type="DoorAudioSettingsLink" ntOffset="15001">
+			<Name>dasl_354039819</Name>
+			<Door>d_door_name_07</Door>
+		</Item>
+		<Item type="DoorAudioSettings" ntOffset="15002">
+			<Name>d_door_name_07</Name>
+			<Sounds>hash_f1e8d9fe</Sounds>
+			<TuningParams>hash_0246d335</TuningParams>
+			<MaxOcclusion value="0.699999988" />
+		</Item>
+		<Item>
+			<Prop>door_name_07</Prop>
+			<Door>d_door_name_07</Door>
+		</Item>
+		<Item type="DoorAudioSettingsLink" ntOffset="15001">
+			<Name>dasl_121412688</Name>
+			<Door>d_door_name_08</Door>
+		</Item>
+		<Item type="DoorAudioSettings" ntOffset="15002">
+			<Name>d_door_name_08</Name>
+			<Sounds>hash_f1e8d9fe</Sounds>
+			<TuningParams>hash_0246d335</TuningParams>
+			<MaxOcclusion value="0.699999988" />
+		</Item>
+		<Item>
+			<Prop>door_name_08</Prop>
+			<Door>d_door_name_08</Door>
+		</Item>
+		<Item type="DoorAudioSettingsLink" ntOffset="15001">
+			<Name>dasl_269626879</Name>
+			<Door>d_door_name_09</Door>
+		</Item>
+		<Item type="DoorAudioSettings" ntOffset="15002">
+			<Name>d_door_name_09</Name>
+			<Sounds>hash_f1e8d9fe</Sounds>
+			<TuningParams>hash_0246d335</TuningParams>
+			<MaxOcclusion value="0.699999988" />
+		</Item>
+		<Item>
+			<Prop>door_name_09</Prop>
+			<Door>d_door_name_09</Door>
+		</Item>
+	</Items>
+</Dat151>

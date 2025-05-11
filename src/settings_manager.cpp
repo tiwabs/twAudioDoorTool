@@ -8,6 +8,7 @@
  */
 SettingsManager& SettingsManager::getInstance() {
     static SettingsManager instance;
+    instance.loadSettings();  // Load settings when instance is created
     return instance;
 }
 
@@ -27,11 +28,6 @@ bool SettingsManager::loadSettings() {
         // Parse JSON data
         nlohmann::json j;
         file >> j;
-
-        // Load theme setting if present
-        if (j.contains("theme")) {
-            selectedThemeIndex = j["theme"];
-        }
 
         // Load sound presets if present
         if (j.contains("availableDoorSound")) {
@@ -55,12 +51,11 @@ bool SettingsManager::loadSettings() {
 
 /**
  * Save current settings to JSON file
- * Includes theme and all sound presets
+ * Includes all sound presets
  */
 bool SettingsManager::saveSettings() {
     try {
         nlohmann::json j;
-        j["theme"] = selectedThemeIndex;
 
         // Convert sound presets to JSON array
         nlohmann::json presetsArray = nlohmann::json::array();
@@ -82,14 +77,6 @@ bool SettingsManager::saveSettings() {
         std::cerr << "Error saving settings: " << e.what() << std::endl;
         return false;
     }
-}
-
-/**
- * Update the selected theme and save the change
- */
-void SettingsManager::setSelectedThemeIndex(int index) {
-    selectedThemeIndex = index;
-    saveSettings();
 }
 
 /**
