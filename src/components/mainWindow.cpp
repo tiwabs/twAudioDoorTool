@@ -79,7 +79,16 @@ void MainWindow::importXmlFile(const std::string& filePath) {
             door.setSounds(itemNode.child("Sounds").text().as_string());
             door.setTuningParams(itemNode.child("TuningParams").text().as_string());
             door.setMaxOcclusion(itemNode.child("MaxOcclusion").attribute("value").as_float());
-            doors.push_back(door);
+
+            // Check if a door with this name already exists
+            auto it = std::find_if(doors.begin(), doors.end(), [&](const Door& d) {
+                return d.getName() == name;
+            });
+            if (it != doors.end()) {
+                *it = door; // Replace existing door
+            } else {
+                doors.push_back(door); // Add new door
+            }
         }
     }
 }
@@ -112,22 +121,24 @@ void MainWindow::render() {
     bool isModalOpen = doorWindow.isModalOpen();
     for (size_t i = 0; i < doors.size(); i++) {
         const auto& door = doors[i];
-        ImGui::BeginChild(("DoorCard" + std::to_string(i)).c_str(), ImVec2(450, 120), true);
+        ImGui::BeginChild(("DoorCard" + std::to_string(i)).c_str(), ImVec2(450, 90), true);
 
         ImGui::BeginGroup();
-        ImGui::Text("%s", door.getName().c_str());
+        char buffer[256];
+        snprintf(buffer, sizeof(buffer), "%zu | %s", i + 1, door.getName().c_str());
+        ImGui::Text("%s", buffer);
         ImGui::EndGroup();
-        ImGui::SameLine();
-        
-        if (isModalOpen) {
-            ImGui::BeginDisabled();
-        }
+
+        float bouton_width_total = 120;
+        float padding = 10.0f;
+        ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - bouton_width_total - padding);
+
+        if (isModalOpen) ImGui::BeginDisabled();
         if (ImGui::Button("Edit", ImVec2(60, 20))) {
             doorWindow.openForEdit(door, i);
         }
-        if (isModalOpen) {
-            ImGui::EndDisabled();
-        }
+        if (isModalOpen) ImGui::EndDisabled();
+
         ImGui::SameLine();
         if (ImGui::Button("Delete", ImVec2(60, 20))) {
             deleteDoor(i);
@@ -144,7 +155,7 @@ void MainWindow::render() {
 
     // Bottom action buttons
     ImGui::Columns(3, nullptr, false);
-    // Colonne 1 : bouton gauche
+    // Column 1: left button
     if (ImGui::Button("Generate file", ImVec2(100, 20))) {
         IGFD::FileDialogConfig config;
         config.countSelectionMax = 1;
@@ -154,13 +165,13 @@ void MainWindow::render() {
         ImGuiFileDialog::Instance()->OpenDialog("ChooseFile", "Choose File", ".xml", config);
     }
     ImGui::NextColumn();
-    // Colonne 2 : texte centré
+    // Column 2: centered text
     float textWidth = ImGui::CalcTextSize("made by tiwabs").x;
     float col2Width = ImGui::GetColumnWidth();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (col2Width - textWidth) * 0.5f);
     ImGui::Text("made by tiwabs");
     ImGui::NextColumn();
-    // Colonne 3 : bouton droite
+    // Column 3: right button
     if (isModalOpen) {
         ImGui::BeginDisabled();
     }

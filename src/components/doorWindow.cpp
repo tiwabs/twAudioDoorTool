@@ -169,9 +169,9 @@ void DoorWindow::render() {
         ImGui::End();
     }
     
-    // Si la fenêtre a été fermée (isOpen est devenu false)
+    // If window is closed (isOpen became false)
     if (!isOpen) {
-        isEditing = false;  // Réinitialiser le mode édition
+        isEditing = false;  // Reset edit mode
     }
 }
 

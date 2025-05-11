@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Définir la politique de version minimale
+# Set minimum policy version
 set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 if(POLICY CMP0135)
     cmake_policy(SET CMP0135 NEW)
@@ -11,17 +11,17 @@ project(twAudioDoorTool)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Définir les options de build
+# Set build options
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
 # Find required packages
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 
-# Inclure FetchContent pour télécharger les dépendances
+# Include FetchContent for downloading dependencies
 include(FetchContent)
 
-# Télécharger et configurer Dear ImGui
+# Download and configure Dear ImGui
 FetchContent_Declare(
     imgui
     GIT_REPOSITORY https://github.com/ocornut/imgui.git
@@ -80,9 +80,12 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
 # Copy settings.json to build directory
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
     ${CMAKE_SOURCE_DIR}/assets/settings.json
     $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets/settings.json
+    COMMENT "Copying settings.json to build directory"
 )
 
 # Link libraries
@@ -93,7 +96,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${OPENGL_LIBRARIES}
 )
 
-# Configurer les chemins d'inclusion
+# Configure include paths
 target_include_directories(${PROJECT_NAME} PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/libs
@@ -103,7 +106,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${OPENGL_INCLUDE_DIR}
 )
 
-# Configuration spécifique pour macOS
+# macOS specific configuration
 if(APPLE)
     target_compile_definitions(${PROJECT_NAME} PRIVATE GL_SILENCE_DEPRECATION)
     target_link_libraries(${PROJECT_NAME} PRIVATE 
@@ -114,7 +117,7 @@ if(APPLE)
     )
 endif()
 
-# Configuration spécifique pour Windows
+# Windows specific configuration
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE 
         winmm

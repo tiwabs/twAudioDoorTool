@@ -1,6 +1,7 @@
 #include "settings_manager.h"
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 
 /**
  * Get the singleton instance of SettingsManager
@@ -8,8 +9,26 @@
  */
 SettingsManager& SettingsManager::getInstance() {
     static SettingsManager instance;
-    instance.loadSettings();  // Load settings when instance is created
+    static bool settingsLoaded = false;
+    
+    if (!settingsLoaded) {
+        settingsLoaded = instance.loadSettings();
+    }
+    
     return instance;
+}
+
+/**
+ * Try to open the settings file at the given path
+ * @return true if the file was opened successfully, false otherwise
+ */
+bool tryOpenSettingsFile(const std::string& path, std::ifstream& file) {
+    file.open(path);
+    if (file.is_open()) {
+        std::cout << "Successfully opened settings file at: " << path << std::endl;
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -18,33 +37,66 @@ SettingsManager& SettingsManager::getInstance() {
  */
 bool SettingsManager::loadSettings() {
     try {
-        // Open settings file
-        std::ifstream file(settingsPath);
-        if (!file.is_open()) {
-            std::cout << "No settings file found, using defaults" << std::endl;
+        std::ifstream file;
+        std::vector<std::string> possiblePaths = {
+            settingsPath,                                    // assets/settings.json
+            "assets/settings.json",                          // assets/settings.json (explicit)
+            "../assets/settings.json",                       // ../assets/settings.json
+            std::string("../../") + settingsPath,           // ../../assets/settings.json
+            std::string("../../../") + settingsPath         // ../../../assets/settings.json
+        };
+
+        bool fileOpened = false;
+        for (const auto& path : possiblePaths) {
+            if (tryOpenSettingsFile(path, file)) {
+                fileOpened = true;
+                settingsPath = path;  // Update the path to the working one
+                break;
+            }
+        }
+
+        if (!fileOpened) {
+            std::cerr << "Error: Could not open settings file. Tried the following paths:" << std::endl;
+            for (const auto& path : possiblePaths) {
+                std::cerr << "  - " << path << std::endl;
+            }
+            std::cerr << "Current working directory: " << std::filesystem::current_path().string() << std::endl;
             return false;
         }
 
         // Parse JSON data
         nlohmann::json j;
-        file >> j;
+        try {
+            file >> j;
+        } catch (const nlohmann::json::parse_error& e) {
+            std::cerr << "Error parsing settings file: " << e.what() << std::endl;
+            return false;
+        }
 
         // Load sound presets if present
         if (j.contains("availableDoorSound")) {
             soundPresets.clear();
             for (const auto& preset : j["availableDoorSound"]) {
-                SoundPreset p;
-                p.name = preset["name"];
-                p.sounds = preset["Sounds"];
-                p.tuningParams = preset["TuningParams"];
-                p.maxOcclusion = preset["MaxOcclusion"];
-                soundPresets.push_back(p);
+                try {
+                    SoundPreset p;
+                    p.name = preset["name"];
+                    p.sounds = preset["Sounds"];
+                    p.tuningParams = preset["TuningParams"];
+                    p.maxOcclusion = preset["MaxOcclusion"];
+                    soundPresets.push_back(p);
+                } catch (const std::exception& e) {
+                    std::cerr << "Error loading preset: " << e.what() << std::endl;
+                    continue;
+                }
             }
+            std::cout << "Successfully loaded " << soundPresets.size() << " sound presets" << std::endl;
+        } else {
+            std::cout << "No sound presets found in settings file" << std::endl;
         }
 
         return true;
     } catch (const std::exception& e) {
-        std::cerr << "Error loading settings: " << e.what() << std::endl;
+        std::cerr << "Unexpected error loading settings: " << e.what() << std::endl;
         return false;
     }
 }
@@ -108,4 +160,23 @@ void SettingsManager::removeSoundPreset(const std::string& name) {
         soundPresets.erase(it);
         saveSettings();
     }
+}
+
+/**
+ * Update a sound preset at a specific index
+ * If the index is invalid, no action is taken
+ */
+void SettingsManager::updateSoundPreset(size_t index, const SoundPreset& preset) {
+    if (index < soundPresets.size()) {
+        soundPresets[index] = preset;
+        saveSettings();
+    }
+}
+
+/**
+ * Check if a sound preset with the given name exists
+ */
+bool SettingsManager::hasSoundPreset(const std::string& name) const {
+    return std::find_if(soundPresets.begin(), soundPresets.end(),
+        [&](const SoundPreset& p) { return p.name == name; }) != soundPresets.end();
 } 

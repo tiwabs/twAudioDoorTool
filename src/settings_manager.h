@@ -13,6 +13,14 @@ struct SoundPreset {
     std::string sounds;         // Sound file paths or identifiers
     std::string tuningParams;   // Sound tuning parameters
     float maxOcclusion;         // Maximum occlusion value for the sound
+
+    // Default constructor
+    SoundPreset() : maxOcclusion(0.7f) {}
+
+    // Constructor with parameters
+    SoundPreset(const std::string& name, const std::string& sounds, 
+                const std::string& tuningParams, float maxOcclusion)
+        : name(name), sounds(sounds), tuningParams(tuningParams), maxOcclusion(maxOcclusion) {}
 };
 
 /**
@@ -26,6 +34,12 @@ public:
      * @return Reference to the SettingsManager instance
      */
     static SettingsManager& getInstance();
+    
+    /**
+     * Force reload settings from file
+     * @return true if settings were loaded successfully, false otherwise
+     */
+    bool reloadSettings() { return loadSettings(); }
     
     /**
      * Load settings from the settings file
@@ -52,11 +66,31 @@ public:
     void addSoundPreset(const SoundPreset& preset);
     
     /**
+     * Update a sound preset at a specific index
+     * @param index Index of the preset to update
+     * @param preset New preset data
+     */
+    void updateSoundPreset(size_t index, const SoundPreset& preset);
+    
+    /**
      * Remove a sound preset by name
      * @param name Name of the preset to remove
      */
     void removeSoundPreset(const std::string& name);
+
+    /**
+     * Check if a sound preset with the given name exists
+     * @param name Name to check
+     * @return true if a preset with this name exists, false otherwise
+     */
+    bool hasSoundPreset(const std::string& name) const;
     
+    /**
+     * Set the path to the settings file
+     * @param path The new path to the settings file
+     */
+    void setSettingsPath(const std::string& path) { settingsPath = path; }
+
 private:
     SettingsManager() = default;  // Private constructor for singleton
     std::string settingsPath = "assets/settings.json";  // Path to settings file
