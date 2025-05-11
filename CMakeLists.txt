@@ -104,6 +104,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${imgui_SOURCE_DIR}/backends
     ${pugixml_SOURCE_DIR}/src
     ${OPENGL_INCLUDE_DIR}
+    ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES}
 )
 
 # macOS specific configuration
