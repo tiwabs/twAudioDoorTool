@@ -9,7 +9,9 @@ SettingsWindow::SettingsWindow() : isOpen(false), isEditing(false), editingIndex
 }
 
 void SettingsWindow::render() {
-    if (ImGui::BeginPopupModal("Settings", &isOpen, 
+    if (!isOpen) return;
+
+    if (ImGui::Begin("Settings", &isOpen, 
         ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse)) {
         
         if (!isEditing) {
@@ -19,7 +21,7 @@ void SettingsWindow::render() {
         }
 
         ImGui::Spacing();
-        ImGui::EndPopup();
+        ImGui::End();
     } else if (!isOpen) {
         // If modal is closed (via the X button), reset edit mode
         resetForm();

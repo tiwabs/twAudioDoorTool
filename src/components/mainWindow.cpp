@@ -169,6 +169,7 @@ void MainWindow::render() {
     float textWidth = ImGui::CalcTextSize("made by tiwabs").x;
     float col2Width = ImGui::GetColumnWidth();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (col2Width - textWidth) * 0.5f);
+    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 4.0f);
     ImGui::Text("made by tiwabs");
     ImGui::NextColumn();
     // Column 3: right button
