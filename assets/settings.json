@@ -53,6 +53,12 @@
       "Sounds": "hash_0ca57a12",
       "TuningParams": "hash_943a667a",
       "MaxOcclusion": 0.7
+    },
+    {
+        "name": "Door with a bell",
+        "Sounds": "door_swing_glass_and_metal_shop_bell",
+        "TuningParams": "dtp_default_swing",
+        "MaxOcclusion": 0.7
     }
   ]  
 }
