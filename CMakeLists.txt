@@ -126,4 +126,9 @@ if(WIN32)
         opengl32
     )
     set(CMAKE_EXE_LINKER_FLAGS "-static")
+
+    # Set the target properties as executable to disable the console window
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        WIN32_EXECUTABLE TRUE
+    )
 endif()
