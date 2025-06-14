@@ -2,6 +2,9 @@
 #include <cstring>
 #include <fstream>
 #include <filesystem>
+#include <cctype>
+#include <sstream>
+#include <iomanip>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -55,33 +58,36 @@ void DoorWindow::generateXmlFile(const std::string& filePath) {
     // Get all doors from the callback
     if (onGetDoors) {
         auto doors = onGetDoors();
+        
+        // First pass: Generate all DoorAudioSettings
         for (const auto& door : doors) {
-            uint32_t hash = calculateJoaatHash(door.getName().c_str());
             std::string doorName = door.getName();
             std::string doorPrefix = "d_" + doorName;
-            std::string daslName = "dasl_" + std::to_string(hash);
-            
-            // DoorAudioSettingsLink
-            pugi::xml_node dasl = items.append_child("Item");
-            dasl.append_attribute("type") = "DoorAudioSettingsLink";
-            dasl.append_attribute("ntOffset") = "15001";
-            dasl.append_child("Name").text() = daslName.c_str();
-            dasl.append_child("Door").text() = doorPrefix.c_str();
-            
+
             // DoorAudioSettings
             pugi::xml_node das = items.append_child("Item");
             das.append_attribute("type") = "DoorAudioSettings";
-            das.append_attribute("ntOffset") = "15002";
+            das.append_attribute("ntOffset") = "0";
             das.append_child("Name").text() = doorPrefix.c_str();
             das.append_child("Sounds").text() = door.getSounds().c_str();
             das.append_child("TuningParams").text() = door.getTuningParams().c_str();
             pugi::xml_node maxOcclusion = das.append_child("MaxOcclusion");
             maxOcclusion.append_attribute("value") = door.getMaxOcclusion();
+        }
+        
+        // Second pass: Generate all DoorAudioSettingsLink
+        for (const auto& door : doors) {
+            std::string hash = calculateJoaatHash(door.getName().c_str());
+            std::string doorName = door.getName();
+            std::string doorPrefix = "d_" + doorName;
+            std::string daslName = "dasl_" + hash;
             
-            // Door Prop
-            pugi::xml_node prop = items.append_child("Item");
-            prop.append_child("Prop").text() = doorName.c_str();
-            prop.append_child("Door").text() = doorPrefix.c_str();
+            // DoorAudioSettingsLink
+            pugi::xml_node dasl = items.append_child("Item");
+            dasl.append_attribute("type") = "DoorAudioSettingsLink";
+            dasl.append_attribute("ntOffset") = "0";
+            dasl.append_child("Name").text() = daslName.c_str();
+            dasl.append_child("Door").text() = doorPrefix.c_str();
         }
     }
     
@@ -193,18 +199,31 @@ void DoorWindow::resetForm() {
     }
 }
 
-uint32_t DoorWindow::calculateJoaatHash(const char* str) {
+std::string DoorWindow::calculateJoaatHash(const char* str) {
     uint32_t hash = 0;
+    std::string keyLowered;
     
-    for (; *str; ++str) {
-        hash += *str;
+    for (const char* p = str; *p; ++p) {
+        keyLowered += std::tolower(*p);
+    }
+    
+    for (size_t i = 0; i < keyLowered.length(); i++) {
+        hash += static_cast<uint32_t>(keyLowered[i]);
         hash += (hash << 10);
-        hash ^= (hash >> 6);
+        hash ^= (static_cast<uint32_t>(hash) >> 6);
     }
     
     hash += (hash << 3);
-    hash ^= (hash >> 11);
+    hash ^= (static_cast<uint32_t>(hash) >> 11);
     hash += (hash << 15);
     
-    return hash;
+    std::stringstream ss;
+    ss << std::hex << hash;
+    std::string hashedStr = ss.str();
+    
+    while (hashedStr.length() < 8) {
+        hashedStr = "0" + hashedStr;
+    }
+    
+    return hashedStr;
 } 

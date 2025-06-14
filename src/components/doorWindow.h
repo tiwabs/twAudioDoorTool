@@ -36,5 +36,5 @@ private:
     float maxOcclusion;
     size_t selectedPreset;
 
-    uint32_t calculateJoaatHash(const char* str);
+    std::string calculateJoaatHash(const char* str);
 }; 
