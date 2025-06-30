@@ -131,4 +131,14 @@ if(WIN32)
     set_target_properties(${PROJECT_NAME} PROPERTIES
         WIN32_EXECUTABLE TRUE
     )
+    
+    # Copy required DLLs to build directory (MINGW64 specific)
+    if(MINGW)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "C:/msys64/mingw64/bin/glfw3.dll"
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>
+            COMMENT "Copying glfw3.dll to build directory"
+        )
+    endif()
 endif()

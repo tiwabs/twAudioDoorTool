@@ -2,7 +2,6 @@
 <Dat151>
   <Version value="9458585" />
   <Items>
-    </Item>
     <Item type="DoorAudioSettings" ntOffset="0">
       <Name>d_my_door_name</Name> <!-- d_ + doorname -->
       <Sounds>door_swing_glass_and_metal_shop_beep</Sounds> <!-- Settings -->
