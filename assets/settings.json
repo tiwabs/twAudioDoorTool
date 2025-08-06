@@ -2,56 +2,56 @@
   "availableDoorSound": [
     {
       "name": "24/7 Door",
-      "Sounds": "hash_f1e8d9fe",
-      "TuningParams": "hash_0246d335",
+      "Sounds": "door_swing_glass_and_metal_shop_beep",
+      "TuningParams": "dtp_default_swing",
       "MaxOcclusion": 0.7
     },
     {
       "name": "Pushed Door",
-      "Sounds": "hash_7f11a20c",
-      "TuningParams": "hash_0246d335",
+      "Sounds": "door_swing_exit_wood_no_mech",
+      "TuningParams": "dtp_default_swing",
       "MaxOcclusion": 0.7
     },
     {
       "name": "Elevator Door",
-      "Sounds": "hash_37d314bf",
-      "TuningParams": "hash_1ec7576e",
+      "Sounds": "door_sliding_lift_fib",
+      "TuningParams": "dtp_fib_elevator_door",
       "MaxOcclusion": 0.7
     },
     {
       "name": "Jail Door",
       "Sounds": "hash_0d2cd7d4",
-      "TuningParams": "hash_0246d335",
+      "TuningParams": "dtp_default_swing",
       "MaxOcclusion": 0.7
     },
     {
       "name": "Sliding Door",
-      "Sounds": "hash_c9e95a9a",
-      "TuningParams": "hash_25b9f39f",
+      "Sounds": "door_slide_manual",
+      "TuningParams": "dtp_sliding_door_interior",
       "MaxOcclusion": 0.7
     },
     {
       "name": "Normal Gate",
-      "Sounds": "hash_d5377a40",
-      "TuningParams": "hash_c85140b1",
+      "Sounds": "door_garage",
+      "TuningParams": "dtp_mp_garage_door",
       "MaxOcclusion": 0.7
     },
     {
       "name": "Slide Gate",
-      "Sounds": "hash_f0d1de2a",
-      "TuningParams": "hash_8c484a48",
+      "Sounds": "door_sliding_metal_gate_bars",
+      "TuningParams": "dtp_default_sliding_horizontal",
       "MaxOcclusion": 0.7
     },
     {
       "name": "Slide Gate 2",
-      "Sounds": "hash_a526a46e",
-      "TuningParams": "hash_8c484a48",
+      "Sounds": "door_garage_heavy_slider",
+      "TuningParams": "dtp_default_sliding_horizontal",
       "MaxOcclusion": 0.7
     },
     {
       "name": "Up-Down Gate",
-      "Sounds": "hash_0ca57a12",
-      "TuningParams": "hash_943a667a",
+      "Sounds": "door_garage_ls_customs",
+      "TuningParams": "dtp_default_sliding_vertical",
       "MaxOcclusion": 0.7
     },
     {
